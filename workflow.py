@@ -28,7 +28,10 @@ class StudyState(TypedDict, total=False):
 def create_material(state: StudyState) -> StudyState:
     model = ChatGroq(
         model=os.getenv("GROQ_MODEL", "openai/gpt-oss-20b"),
+        api_key=os.getenv("GROQ_API_KEY", "").strip(),
         temperature=0.2,
+        timeout=120,
+        max_retries=3,
     )
     structured_model = model.with_structured_output(StudyMaterial)
 

@@ -88,7 +88,7 @@ def study_video(request: StudyRequest):
 
         print(f"Study request failed: {type(error).__name__}: {error!r}")
         print(
-            f"Underlying cause: "
+            f"Study request failed: {type(error).__name__}"
             f"{type(cause).__name__ if cause else 'None'}: {cause!r}"
         )
 

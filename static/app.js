@@ -18,11 +18,12 @@ form.addEventListener("submit", async (event) => {
   submitButton.disabled = true;
   submitButton.querySelector("span").textContent = "Working on it…";
 
-  const payload = {
-    video_url: form.video_url.value.trim(),
-    language: form.language.value,
-    quiz_count: 5,
-  };
+ const payload = {
+  video_url: form.elements.video_url.value.trim(),
+  transcript_text: form.elements.transcript_text.value.trim(),
+  language: form.elements.language.value,
+  quiz_count: 5,
+};
 
   try {
     const response = await fetch("/api/study", {
@@ -49,7 +50,13 @@ form.addEventListener("submit", async (event) => {
 
 function renderResults(data) {
   document.querySelector("#result-title").textContent = data.title || "Your study guide";
-  document.querySelector("#watch-link").href = data.video_url;
+  const watchLink = document.querySelector("#watch-link");
+if (data.video_url) {
+  watchLink.href = data.video_url;
+  watchLink.classList.remove("hidden");
+} else {
+  watchLink.classList.add("hidden");
+}
 
   summaryList.replaceChildren();
   for (const point of data.summary || []) {

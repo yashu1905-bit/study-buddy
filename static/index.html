@@ -5,9 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f6f5f1">
   <title>Study Buddy — Learn from any video</title>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap"
+    rel="stylesheet"
+  >
   <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
@@ -30,12 +34,29 @@
           </p>
 
           <form id="study-form" class="input-card">
-            <label for="video-url">YOUTUBE VIDEO LINK</label>
+            <label for="video-url">YOUTUBE VIDEO LINK <span class="optional">(optional if you paste captions)</span></label>
+
             <div class="url-row">
               <span class="link-icon">↗</span>
-              <input id="video-url" name="video_url" type="url"
-                     placeholder="Paste a YouTube link here..." required>
+              <input
+                id="video-url"
+                name="video_url"
+                type="url"
+                placeholder="Paste a YouTube link here..."
+              >
             </div>
+
+            <div class="transcript-input">
+              <label for="transcript-text">OR PASTE THE VIDEO CAPTIONS</label>
+              <textarea
+                id="transcript-text"
+                name="transcript_text"
+                rows="5"
+                placeholder="If captions can’t be loaded automatically, paste them here. On YouTube, open the video menu and choose Show transcript."
+              ></textarea>
+              <small>Tip: on YouTube, open the video’s menu and select “Show transcript.”</small>
+            </div>
+
             <div class="form-bottom">
               <label class="select-label" for="language">Caption language</label>
               <select id="language" name="language">
@@ -46,8 +67,10 @@
                 <option value="de">German</option>
                 <option value="ja">Japanese</option>
               </select>
+
               <button id="submit-button" type="submit">
-                <span>Build my study guide</span><span class="button-arrow">→</span>
+                <span>Build my study guide</span>
+                <span class="button-arrow">→</span>
               </button>
             </div>
           </form>
@@ -65,7 +88,9 @@
               <div class="play-button">▶</div>
               <div class="thumb-lines"><i></i><i></i><i></i></div>
             </div>
-            <div class="video-card-caption"><span class="tiny-dot"></span> VIDEO LESSON <span class="duration">12:48</span></div>
+            <div class="video-card-caption">
+              <span class="tiny-dot"></span> VIDEO LESSON <span class="duration">12:48</span>
+            </div>
           </div>
           <div class="art-card note-card">
             <span class="note-icon">✎</span>
@@ -84,32 +109,61 @@
 
       <section id="loading" class="loading-panel hidden" aria-live="polite">
         <div class="loader"></div>
-        <div><strong>Putting your study guide together</strong><p>Fetching captions and finding the key ideas…</p></div>
+        <div>
+          <strong>Putting your study guide together</strong>
+          <p>Reading captions and finding the key ideas…</p>
+        </div>
       </section>
 
       <section id="error" class="error-panel hidden" role="alert"></section>
 
       <section id="results" class="results hidden">
         <div class="results-heading">
-          <div><div class="eyebrow"><span>✦</span> YOUR STUDY GUIDE</div><h2 id="result-title">Ready to learn</h2></div>
-          <a id="watch-link" class="watch-link" target="_blank" rel="noreferrer">Watch video ↗</a>
+          <div>
+            <div class="eyebrow"><span>✦</span> YOUR STUDY GUIDE</div>
+            <h2 id="result-title">Ready to learn</h2>
+          </div>
+          <a id="watch-link" class="watch-link hidden" target="_blank" rel="noreferrer">
+            Watch video ↗
+          </a>
         </div>
+
         <div class="result-grid">
           <article class="content-card summary-card">
-            <div class="card-heading"><span class="card-icon summary-icon">✧</span><div><h3>Key ideas</h3><p>The main takeaways from this video</p></div></div>
+            <div class="card-heading">
+              <span class="card-icon summary-icon">✧</span>
+              <div>
+                <h3>Key ideas</h3>
+                <p>The main takeaways from this video</p>
+              </div>
+            </div>
             <ol id="summary-list" class="summary-list"></ol>
           </article>
+
           <article class="content-card quiz-content-card">
-            <div class="card-heading"><span class="card-icon quiz-icon">?</span><div><h3>Quick quiz</h3><p>Check what you remember</p></div></div>
+            <div class="card-heading">
+              <span class="card-icon quiz-icon">?</span>
+              <div>
+                <h3>Quick quiz</h3>
+                <p>Check what you remember</p>
+              </div>
+            </div>
             <div id="quiz-container"></div>
             <div id="quiz-score" class="quiz-score hidden"></div>
-            <button id="check-answers" class="check-button">Check my answers <span>→</span></button>
+            <button id="check-answers" class="check-button">
+              Check my answers <span>→</span>
+            </button>
           </article>
         </div>
       </section>
     </main>
-    <footer><span>Made for curious minds.</span><span>Study a little smarter ✳</span></footer>
+
+    <footer>
+      <span>Made for curious minds.</span>
+      <span>Study a little smarter ✳</span>
+    </footer>
   </div>
+
   <script src="/static/app.js"></script>
 </body>
 </html>

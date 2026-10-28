@@ -1,4 +1,7 @@
 import re
+import os
+import time
+import requests
 
 from youtube_transcript_api import YouTubeTranscriptApi
 
@@ -55,4 +58,72 @@ def get_transcript(video_id: str, preferred_language: str = "en") -> tuple[str, 
         raise RuntimeError(
             f"Couldn’t load captions ({type(error).__name__}). "
             "Check Render logs for details."
+        ) from error
+
+
+def get_transcript_from_supadata(
+    video_url: str,
+    preferred_language: str = "en",
+) -> tuple[str, str]:
+    api_key = os.getenv("SUPADATA_API_KEY")
+
+    if not api_key:
+        raise RuntimeError("SUPADATA_API_KEY Render Environment settings mein missing hai.")
+
+    headers = {"x-api-key": api_key}
+    params = {
+        "url": video_url,
+        "lang": preferred_language,
+        "text": "true",
+        "mode": "auto",
+    }
+
+    try:
+        response = requests.get(
+            "https://api.supadata.ai/v1/transcript",
+            headers=headers,
+            params=params,
+            timeout=60,
+        )
+        response.raise_for_status()
+        data = response.json()
+
+        # Long videos may return a job ID that needs polling.
+        job_id = data.get("jobId")
+        if job_id:
+            for _ in range(90):
+                time.sleep(2)
+                job_response = requests.get(
+                    f"https://api.supadata.ai/v1/transcript/{job_id}",
+                    headers=headers,
+                    timeout=30,
+                )
+                job_response.raise_for_status()
+                data = job_response.json()
+
+                if data.get("status") == "completed":
+                    break
+                if data.get("status") == "failed":
+                    raise RuntimeError("Supadata can't process video transcript ")
+            else:
+                raise RuntimeError("Transcript in progress. Try again after some time")
+
+        content = data.get("content", "")
+        if isinstance(content, list):
+            content = " ".join(
+                part.get("text", "") for part in content if isinstance(part, dict)
+            )
+
+        if not content.strip():
+            raise RuntimeError("can;t find transcript for this video.")
+
+        return content[:60000], data.get("lang", preferred_language)
+
+    except requests.RequestException as error:
+        detail = ""
+        if getattr(error, "response", None) is not None:
+            detail = error.response.text[:500]
+        print(f"Supadata request error: {error} {detail}")
+        raise RuntimeError(
+            "Can;t find captions from Transcript service. Check API key aur service limits"
         ) from error

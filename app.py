@@ -11,7 +11,7 @@ from pydantic import BaseModel, Field,model_validator
 load_dotenv()
 
 from workflow import make_study_material
-from youtube import get_video_id, get_transcript
+from youtube import get_video_id, get_transcript, get_transcript_from_supadata
 
 
 
@@ -59,10 +59,10 @@ def study_video(request: StudyRequest):
             transcript_language = request.language
         else:
             video_id = get_video_id(request.video_url)
-            transcript, transcript_language = get_transcript(
-                video_id,
-                preferred_language=request.language,
-            )
+            transcript, transcript_language = get_transcript_from_supadata(
+           f"https://www.youtube.com/watch?v={video_id}",
+           preferred_language=request.language,
+         )
 
         result = make_study_material(
             transcript=transcript[:60000],

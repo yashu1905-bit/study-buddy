@@ -42,27 +42,28 @@ def home():
 @app.get("/api/health")
 def health():
     return {"status": "ok"}
-
 @app.post("/api/study")
 def study_video(request: StudyRequest):
     if not os.getenv("GROQ_API_KEY"):
         raise HTTPException(
             status_code=503,
-            detail="GROQ_API_KEY missing . Add key in  Render Environment settings",
+            detail="GROQ_API_KEY Render Environment settings mein missing hai.",
         )
 
     video_id = None
 
     try:
+        # Agar captions paste kiye hain, woh use karo.
         if request.transcript_text.strip():
             transcript = request.transcript_text.strip()
             transcript_language = request.language
         else:
+            # Warna video link se Supadata ke through captions lao.
             video_id = get_video_id(request.video_url)
             transcript, transcript_language = get_transcript_from_supadata(
-           f"https://www.youtube.com/watch?v={video_id}",
-           preferred_language=request.language,
-         )
+                f"https://www.youtube.com/watch?v={video_id}",
+                preferred_language=request.language,
+            )
 
         result = make_study_material(
             transcript=transcript[:60000],
@@ -78,11 +79,20 @@ def study_video(request: StudyRequest):
 
     except ValueError as error:
         raise HTTPException(status_code=400, detail=str(error)) from error
+
     except RuntimeError as error:
         raise HTTPException(status_code=422, detail=str(error)) from error
+
     except Exception as error:
-        print(f"Study request failed: {type(error).__name__}: {error}")
+        cause = error.__cause__ or error.__context__
+
+        print(f"Study request failed: {type(error).__name__}: {error!r}")
+        print(
+            f"Underlying cause: "
+            f"{type(cause).__name__ if cause else 'None'}: {cause!r}"
+        )
+
         raise HTTPException(
             status_code=500,
-            detail="Study guide can't be made .Check  Render logs .",
+            detail="Study guide nahi ban paya. Render logs check karo.",
         ) from error

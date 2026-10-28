@@ -51,7 +51,8 @@ def get_transcript(video_id: str, preferred_language: str = "en") -> tuple[str, 
     except RuntimeError:
         raise
     except Exception as error:
+        print(f"YouTube transcript error for {video_id}: {type(error).__name__}: {error}")
         raise RuntimeError(
-            "Couldn’t load captions for this video. Check that captions are available "
-            "and that the video is public. YouTube may also temporarily block transcript requests."
+            f"Couldn’t load captions ({type(error).__name__}). "
+            "Check Render logs for details."
         ) from error
